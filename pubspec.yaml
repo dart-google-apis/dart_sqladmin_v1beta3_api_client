@@ -1,0 +1,14 @@
+name: google_sqladmin_v1beta3_api
+version: 0.4.0
+authors:
+- Adam Singer <financeCoding@gmail.com>
+- Gerwin Sturm <scarygami@gmail.com>
+- Kevin Moore <kevin@thinkpixellab.com>
+description: Auto-generated client library for accessing the sqladmin v1beta3 API
+homepage: https://github.com/dart-gde/discovery_api_dart_client_generator
+environment:
+  sdk: '>=0.8.7'
+dependencies:
+  google_oauth2_client: '>=0.3.0'
+dev_dependencies:
+  hop: '>=0.26.0'
