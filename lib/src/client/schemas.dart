@@ -240,7 +240,7 @@ class DatabaseInstance {
   /** The project ID of the project containing the Cloud SQL instance. The Google apps domain is prefixed if applicable. */
   core.String project;
 
-  /** The geographical region. Can be us-east1 or europe-west1. Defaults to us-east1. The region can not be changed after instance creation. */
+  /** The geographical region. Can be us-east1, us-central or europe-west1. Defaults to us-central. The region can not be changed after instance creation. */
   core.String region;
 
   /** SSL configuration. */
@@ -1062,6 +1062,9 @@ class IpConfiguration {
   /** Whether the instance should be assigned an IP address or not. */
   core.bool enabled;
 
+  /** Whether the mysqld should default to 'REQUIRE X509' for users connecting over IP. */
+  core.bool requireSsl;
+
   /** Create new IpConfiguration from JSON data */
   IpConfiguration.fromJson(core.Map json) {
     if (json.containsKey("authorizedNetworks")) {
@@ -1069,6 +1072,9 @@ class IpConfiguration {
     }
     if (json.containsKey("enabled")) {
       enabled = json["enabled"];
+    }
+    if (json.containsKey("requireSsl")) {
+      requireSsl = json["requireSsl"];
     }
   }
 
@@ -1081,6 +1087,9 @@ class IpConfiguration {
     }
     if (enabled != null) {
       output["enabled"] = enabled;
+    }
+    if (requireSsl != null) {
+      output["requireSsl"] = requireSsl;
     }
 
     return output;
@@ -1427,6 +1436,7 @@ class SslCert {
   /** Time when the certificate was created. */
   core.String createTime;
 
+  /** Time when the certificate expires. */
   core.String expirationTime;
 
   /** Name of the database instance. */
