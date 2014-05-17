@@ -213,13 +213,154 @@ class BackupRunsListResponse {
 
 }
 
+/** Binary log coordinates. */
+class BinLogCoordinates {
+
+  /** Name of the binary log file for a Cloud SQL instance. */
+  core.String binLogFileName;
+
+  /** Position (offset) within the binary log file. */
+  core.int binLogPosition;
+
+  /** This is always sql#binLogCoordinates. */
+  core.String kind;
+
+  /** Create new BinLogCoordinates from JSON data */
+  BinLogCoordinates.fromJson(core.Map json) {
+    if (json.containsKey("binLogFileName")) {
+      binLogFileName = json["binLogFileName"];
+    }
+    if (json.containsKey("binLogPosition")) {
+      binLogPosition = (json["binLogPosition"] is core.String) ? core.int.parse(json["binLogPosition"]) : json["binLogPosition"];
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+  }
+
+  /** Create JSON Object for BinLogCoordinates */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (binLogFileName != null) {
+      output["binLogFileName"] = binLogFileName;
+    }
+    if (binLogPosition != null) {
+      output["binLogPosition"] = binLogPosition;
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of BinLogCoordinates */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** Database instance clone context. */
+class CloneContext {
+
+  /** Binary log coordinates, if specified, indentify the the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordintes. */
+  BinLogCoordinates binLogCoordinates;
+
+  /** Name of the Cloud SQL instance to be created as a clone. */
+  core.String destinationInstanceName;
+
+  /** This is always sql#cloneContext. */
+  core.String kind;
+
+  /** Name of the Cloud SQL instance to be cloned. */
+  core.String sourceInstanceName;
+
+  /** Create new CloneContext from JSON data */
+  CloneContext.fromJson(core.Map json) {
+    if (json.containsKey("binLogCoordinates")) {
+      binLogCoordinates = new BinLogCoordinates.fromJson(json["binLogCoordinates"]);
+    }
+    if (json.containsKey("destinationInstanceName")) {
+      destinationInstanceName = json["destinationInstanceName"];
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("sourceInstanceName")) {
+      sourceInstanceName = json["sourceInstanceName"];
+    }
+  }
+
+  /** Create JSON Object for CloneContext */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (binLogCoordinates != null) {
+      output["binLogCoordinates"] = binLogCoordinates.toJson();
+    }
+    if (destinationInstanceName != null) {
+      output["destinationInstanceName"] = destinationInstanceName;
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (sourceInstanceName != null) {
+      output["sourceInstanceName"] = sourceInstanceName;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of CloneContext */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** MySQL flags for Cloud SQL instances. */
+class DatabaseFlags {
+
+  /** The name of the flag. These flags are passed at instance startup, so include both MySQL server options and MySQL system variables. Flags should be specified with underscores, not hyphens. Refer to the official MySQL documentation on server options and system variables for descriptions of what these flags do. Acceptable values are:  event_scheduler on or off (Note: The event scheduler will only work reliably if the instance activationPolicy is set to ALWAYS.) general_log on or off group_concat_max_len 4..17179869184 innodb_flush_log_at_trx_commit 0..2 innodb_lock_wait_timeout 1..1073741824 log_bin_trust_function_creators on or off log_output Can be either TABLE or NONE, FILE is not supported. log_queries_not_using_indexes on or off long_query_time 0..30000000 lower_case_table_names 0..2 max_allowed_packet 16384..1073741824 read_only on or off skip_show_database on or off slow_query_log on or off wait_timeout 1..31536000 */
+  core.String name;
+
+  /** The value of the flag. Booleans should be set using 1 for true, and 0 for false. This field must be omitted if the flag doesn't take a value. */
+  core.String value;
+
+  /** Create new DatabaseFlags from JSON data */
+  DatabaseFlags.fromJson(core.Map json) {
+    if (json.containsKey("name")) {
+      name = json["name"];
+    }
+    if (json.containsKey("value")) {
+      value = json["value"];
+    }
+  }
+
+  /** Create JSON Object for DatabaseFlags */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (name != null) {
+      output["name"] = name;
+    }
+    if (value != null) {
+      output["value"] = value;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of DatabaseFlags */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
 /** A Cloud SQL instance resource. */
 class DatabaseInstance {
 
   /** The current disk usage of the instance in bytes. */
   core.int currentDiskSize;
 
-  /** The database engine type and version, for example MYSQL_5_5 for MySQL 5.5. */
+  /** The database engine type and version. Can be MYSQL_5_5 or MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion can not be changed after instance creation. */
   core.String databaseVersion;
 
   /** HTTP 1.1 Entity tag for the resource. */
@@ -240,7 +381,7 @@ class DatabaseInstance {
   /** The project ID of the project containing the Cloud SQL instance. The Google apps domain is prefixed if applicable. */
   core.String project;
 
-  /** The geographical region. Can be us-east1, us-central or europe-west1. Defaults to us-central. The region can not be changed after instance creation. */
+  /** The geographical region. Can be us-east1, us-central, asia-east1 or europe-west1. Defaults to us-central. The region can not be changed after instance creation. */
   core.String region;
 
   /** SSL configuration. */
@@ -398,6 +539,127 @@ class ExportContext {
   }
 
   /** Return String representation of ExportContext */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** A Google Cloud SQL service flag resource. */
+class Flag {
+
+  /** For STRING flags, a list of strings that the value can be set to. */
+  core.List<core.String> allowedStringValues;
+
+  /** The database version this flag applies to. Currently this can only be [MYSQL_5_5]. */
+  core.List<core.String> appliesTo;
+
+  /** This is always sql#flag. */
+  core.String kind;
+
+  /** For INTEGER flags, the maximum allowed value. */
+  core.int maxValue;
+
+  /** For INTEGER flags, the minimum allowed value. */
+  core.int minValue;
+
+  /** This is the name of the flag. Flag names always use underscores, not hyphens, e.g. max_allowed_packet */
+  core.String name;
+
+  /** The type of the flag. Flags are typed to being BOOLEAN, STRING, INTEGER or NONE. NONE is used for flags which do not take a value, such as skip_grant_tables. */
+  core.String type;
+
+  /** Create new Flag from JSON data */
+  Flag.fromJson(core.Map json) {
+    if (json.containsKey("allowedStringValues")) {
+      allowedStringValues = json["allowedStringValues"].toList();
+    }
+    if (json.containsKey("appliesTo")) {
+      appliesTo = json["appliesTo"].toList();
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("maxValue")) {
+      maxValue = (json["maxValue"] is core.String) ? core.int.parse(json["maxValue"]) : json["maxValue"];
+    }
+    if (json.containsKey("minValue")) {
+      minValue = (json["minValue"] is core.String) ? core.int.parse(json["minValue"]) : json["minValue"];
+    }
+    if (json.containsKey("name")) {
+      name = json["name"];
+    }
+    if (json.containsKey("type")) {
+      type = json["type"];
+    }
+  }
+
+  /** Create JSON Object for Flag */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (allowedStringValues != null) {
+      output["allowedStringValues"] = allowedStringValues.toList();
+    }
+    if (appliesTo != null) {
+      output["appliesTo"] = appliesTo.toList();
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (maxValue != null) {
+      output["maxValue"] = maxValue;
+    }
+    if (minValue != null) {
+      output["minValue"] = minValue;
+    }
+    if (name != null) {
+      output["name"] = name;
+    }
+    if (type != null) {
+      output["type"] = type;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of Flag */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** Flags list response. */
+class FlagsListResponse {
+
+  /** List of flags. */
+  core.List<Flag> items;
+
+  /** This is always sql#flagsList. */
+  core.String kind;
+
+  /** Create new FlagsListResponse from JSON data */
+  FlagsListResponse.fromJson(core.Map json) {
+    if (json.containsKey("items")) {
+      items = json["items"].map((itemsItem) => new Flag.fromJson(itemsItem)).toList();
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+  }
+
+  /** Create JSON Object for FlagsListResponse */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (items != null) {
+      output["items"] = items.map((itemsItem) => itemsItem.toJson()).toList();
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of FlagsListResponse */
   core.String toString() => JSON.encode(this.toJson());
 
 }
@@ -602,6 +864,73 @@ class InstanceSetRootPasswordRequest {
   }
 
   /** Return String representation of InstanceSetRootPasswordRequest */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** Database instance clone request. */
+class InstancesCloneRequest {
+
+  /** Contains details about the clone operation. */
+  CloneContext cloneContext;
+
+  /** Create new InstancesCloneRequest from JSON data */
+  InstancesCloneRequest.fromJson(core.Map json) {
+    if (json.containsKey("cloneContext")) {
+      cloneContext = new CloneContext.fromJson(json["cloneContext"]);
+    }
+  }
+
+  /** Create JSON Object for InstancesCloneRequest */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (cloneContext != null) {
+      output["cloneContext"] = cloneContext.toJson();
+    }
+
+    return output;
+  }
+
+  /** Return String representation of InstancesCloneRequest */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+/** Database instance clone response. */
+class InstancesCloneResponse {
+
+  /** This is always sql#instancesClone. */
+  core.String kind;
+
+  /** An unique identifier for the operation associated with the cloned instance. You can use this identifier to retrieve the Operations resource, which has information about the operation. */
+  core.String operation;
+
+  /** Create new InstancesCloneResponse from JSON data */
+  InstancesCloneResponse.fromJson(core.Map json) {
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("operation")) {
+      operation = json["operation"];
+    }
+  }
+
+  /** Create JSON Object for InstancesCloneResponse */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (operation != null) {
+      output["operation"] = operation;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of InstancesCloneResponse */
   core.String toString() => JSON.encode(this.toJson());
 
 }
@@ -980,7 +1309,7 @@ class InstancesRestoreBackupResponse {
 /** Database instance set root password response. */
 class InstancesSetRootPasswordResponse {
 
-  /** This is always sql#instancesSetRootPasswird. */
+  /** This is always sql#instancesSetRootPassword. */
   core.String kind;
 
   /** An identifier that uniquely identifies the operation. You can use this identifier to retrieve the Operations resource that has information about the operation. */
@@ -1323,6 +1652,9 @@ ON_DEMAND: The instance is activated upon receiving requests. */
   /** The daily backup configuration for the instance. */
   core.List<BackupConfiguration> backupConfiguration;
 
+  /** The database flags passed to the instance at startup. */
+  core.List<DatabaseFlags> databaseFlags;
+
   /** The settings for IP Management. This allows to enable or disable the instance IP and manage which external networks can connect to the instance. */
   IpConfiguration ipConfiguration;
 
@@ -1354,6 +1686,9 @@ ON_DEMAND: The instance is activated upon receiving requests. */
     }
     if (json.containsKey("backupConfiguration")) {
       backupConfiguration = json["backupConfiguration"].map((backupConfigurationItem) => new BackupConfiguration.fromJson(backupConfigurationItem)).toList();
+    }
+    if (json.containsKey("databaseFlags")) {
+      databaseFlags = json["databaseFlags"].map((databaseFlagsItem) => new DatabaseFlags.fromJson(databaseFlagsItem)).toList();
     }
     if (json.containsKey("ipConfiguration")) {
       ipConfiguration = new IpConfiguration.fromJson(json["ipConfiguration"]);
@@ -1390,6 +1725,9 @@ ON_DEMAND: The instance is activated upon receiving requests. */
     }
     if (backupConfiguration != null) {
       output["backupConfiguration"] = backupConfiguration.map((backupConfigurationItem) => backupConfigurationItem.toJson()).toList();
+    }
+    if (databaseFlags != null) {
+      output["databaseFlags"] = databaseFlags.map((databaseFlagsItem) => databaseFlagsItem.toJson()).toList();
     }
     if (ipConfiguration != null) {
       output["ipConfiguration"] = ipConfiguration.toJson();
@@ -1715,7 +2053,7 @@ class Tier {
   /** This is always sql#tier. */
   core.String kind;
 
-  /** The applicable regions for this tier. Can be us-east1 and europe-west1. */
+  /** The applicable regions for this tier. Can be us-east1, europe-west1, or asia-east1. */
   core.List<core.String> region;
 
   /** An identifier for the service tier, for example D1, D2 etc. For related information, see Pricing. */

@@ -21,7 +21,7 @@ class BackupRunsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<BackupRun> get(core.String project, core.String instance, core.String backupConfiguration, core.String dueTime, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/backupRuns/{backupConfiguration}";
+    var url = "projects/{project}/instances/{instance}/backupRuns/{backupConfiguration}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -68,7 +68,7 @@ class BackupRunsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<BackupRunsListResponse> list(core.String project, core.String instance, core.String backupConfiguration, {core.int maxResults, core.String pageToken, core.Map optParams}) {
-    var url = "{project}/instances/{instance}/backupRuns";
+    var url = "projects/{project}/instances/{instance}/backupRuns";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -100,12 +100,84 @@ class BackupRunsResource_ {
   }
 }
 
+class FlagsResource_ {
+
+  final Client _client;
+
+  FlagsResource_(Client client) :
+      _client = client;
+
+  /**
+   * List all available database flags for Google Cloud SQL instances.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<FlagsListResponse> list({core.Map optParams}) {
+    var url = "flags";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new FlagsListResponse.fromJson(data));
+  }
+}
+
 class InstancesResource_ {
 
   final Client _client;
 
   InstancesResource_(Client client) :
       _client = client;
+
+  /**
+   * Creates a Cloud SQL instance as a clone of the source instance.
+   *
+   * [request] - InstancesCloneRequest to send in this request
+   *
+   * [project] - Project ID of the source as well as the clone Cloud SQL instance.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<InstancesCloneResponse> clone(InstancesCloneRequest request, core.String project, {core.Map optParams}) {
+    var url = "projects/{project}/instances/clone";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (project == null) paramErrors.add("project is required");
+    if (project != null) urlParams["project"] = project;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new InstancesCloneResponse.fromJson(data));
+  }
 
   /**
    * Deletes a Cloud SQL instance.
@@ -117,7 +189,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesDeleteResponse> delete(core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}";
+    var url = "projects/{project}/instances/{instance}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -156,7 +228,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesExportResponse> export(InstancesExportRequest request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/export";
+    var url = "projects/{project}/instances/{instance}/export";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -193,7 +265,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<DatabaseInstance> get(core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}";
+    var url = "projects/{project}/instances/{instance}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -232,7 +304,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesImportResponse> import(InstancesImportRequest request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/import";
+    var url = "projects/{project}/instances/{instance}/import";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -269,7 +341,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesInsertResponse> insert(DatabaseInstance request, core.String project, {core.Map optParams}) {
-    var url = "{project}/instances";
+    var url = "projects/{project}/instances";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -306,7 +378,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesListResponse> list(core.String project, {core.int maxResults, core.String pageToken, core.Map optParams}) {
-    var url = "{project}/instances";
+    var url = "projects/{project}/instances";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -345,7 +417,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesUpdateResponse> patch(DatabaseInstance request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}";
+    var url = "projects/{project}/instances/{instance}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -382,7 +454,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesResetSslConfigResponse> resetSslConfig(core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/resetSslConfig";
+    var url = "projects/{project}/instances/{instance}/resetSslConfig";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -419,7 +491,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesRestartResponse> restart(core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/restart";
+    var url = "projects/{project}/instances/{instance}/restart";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -460,7 +532,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesRestoreBackupResponse> restoreBackup(core.String project, core.String instance, core.String backupConfiguration, core.String dueTime, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/restoreBackup";
+    var url = "projects/{project}/instances/{instance}/restoreBackup";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -503,7 +575,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesSetRootPasswordResponse> setRootPassword(InstanceSetRootPasswordRequest request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/setRootPassword";
+    var url = "projects/{project}/instances/{instance}/setRootPassword";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -542,7 +614,7 @@ class InstancesResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstancesUpdateResponse> update(DatabaseInstance request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}";
+    var url = "projects/{project}/instances/{instance}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -589,7 +661,7 @@ class OperationsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<InstanceOperation> get(core.String project, core.String instance, core.String operation, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/operations/{operation}";
+    var url = "projects/{project}/instances/{instance}/operations/{operation}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -632,7 +704,7 @@ class OperationsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<OperationsListResponse> list(core.String project, core.String instance, {core.int maxResults, core.String pageToken, core.Map optParams}) {
-    var url = "{project}/instances/{instance}/operations";
+    var url = "projects/{project}/instances/{instance}/operations";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -681,7 +753,7 @@ class SslCertsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<SslCertsDeleteResponse> delete(core.String project, core.String instance, core.String sha1Fingerprint, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/sslCerts/{sha1Fingerprint}";
+    var url = "projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -722,7 +794,7 @@ class SslCertsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<SslCert> get(core.String project, core.String instance, core.String sha1Fingerprint, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/sslCerts/{sha1Fingerprint}";
+    var url = "projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -763,7 +835,7 @@ class SslCertsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<SslCertsInsertResponse> insert(SslCertsInsertRequest request, core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/sslCerts";
+    var url = "projects/{project}/instances/{instance}/sslCerts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -800,7 +872,7 @@ class SslCertsResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<SslCertsListResponse> list(core.String project, core.String instance, {core.Map optParams}) {
-    var url = "{project}/instances/{instance}/sslCerts";
+    var url = "projects/{project}/instances/{instance}/sslCerts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -843,7 +915,7 @@ class TiersResource_ {
    * [optParams] - Additional query parameters
    */
   async.Future<TiersListResponse> list(core.String project, {core.Map optParams}) {
-    var url = "{project}/tiers";
+    var url = "projects/{project}/tiers";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 

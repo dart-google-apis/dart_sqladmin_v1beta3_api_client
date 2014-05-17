@@ -1,7 +1,7 @@
 part of sqladmin_v1beta3_api;
 
 abstract class Client extends ClientBase {
-  core.String basePath = "/sql/v1beta3/projects/";
+  core.String basePath = "/sql/v1beta3/";
   core.String rootUrl = "https://www.googleapis.com/";
 
   //
@@ -9,6 +9,7 @@ abstract class Client extends ClientBase {
   //
 
   BackupRunsResource_ get backupRuns => new BackupRunsResource_(this);
+  FlagsResource_ get flags => new FlagsResource_(this);
   InstancesResource_ get instances => new InstancesResource_(this);
   OperationsResource_ get operations => new OperationsResource_(this);
   SslCertsResource_ get sslCerts => new SslCertsResource_(this);
