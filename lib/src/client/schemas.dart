@@ -263,7 +263,7 @@ class BinLogCoordinates {
 /** Database instance clone context. */
 class CloneContext {
 
-  /** Binary log coordinates, if specified, indentify the the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordintes. */
+  /** Binary log coordinates, if specified, indentify the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordinates. */
   BinLogCoordinates binLogCoordinates;
 
   /** Name of the Cloud SQL instance to be created as a clone. */
@@ -319,7 +319,7 @@ class CloneContext {
 /** MySQL flags for Cloud SQL instances. */
 class DatabaseFlags {
 
-  /** The name of the flag. These flags are passed at instance startup, so include both MySQL server options and MySQL system variables. Flags should be specified with underscores, not hyphens. Refer to the official MySQL documentation on server options and system variables for descriptions of what these flags do. Acceptable values are:  event_scheduler on or off (Note: The event scheduler will only work reliably if the instance activationPolicy is set to ALWAYS.) general_log on or off group_concat_max_len 4..17179869184 innodb_flush_log_at_trx_commit 0..2 innodb_lock_wait_timeout 1..1073741824 log_bin_trust_function_creators on or off log_output Can be either TABLE or NONE, FILE is not supported. log_queries_not_using_indexes on or off long_query_time 0..30000000 lower_case_table_names 0..2 max_allowed_packet 16384..1073741824 read_only on or off skip_show_database on or off slow_query_log on or off wait_timeout 1..31536000 */
+  /** The name of the flag. These flags are passed at instance startup, so include both MySQL server options and MySQL system variables. Flags should be specified with underscores, not hyphens. Refer to the official MySQL documentation on server options and system variables for descriptions of what these flags do. Acceptable values are:  character_set_server utf8 or utf8mb4 event_scheduler on or off (Note: The event scheduler will only work reliably if the instance activationPolicy is set to ALWAYS) general_log on or off group_concat_max_len 4..17179869184 innodb_flush_log_at_trx_commit 0..2 innodb_lock_wait_timeout 1..1073741824 log_bin_trust_function_creators on or off log_output Can be either TABLE or NONE, FILE is not supported log_queries_not_using_indexes on or off long_query_time 0..30000000 lower_case_table_names 0..2 max_allowed_packet 16384..1073741824 read_only on or off skip_show_database on or off slow_query_log on or off. If set to on, you must also set the log_output flag to TABLE to receive logs. wait_timeout 1..31536000 */
   core.String name;
 
   /** The value of the flag. Booleans should be set using 1 for true, and 0 for false. This field must be omitted if the flag doesn't take a value. */
@@ -360,7 +360,7 @@ class DatabaseInstance {
   /** The current disk usage of the instance in bytes. */
   core.int currentDiskSize;
 
-  /** The database engine type and version. Can be MYSQL_5_5 or MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion can not be changed after instance creation. */
+  /** The database engine type and version. Can be MYSQL_5_5 or MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion cannot be changed after instance creation. */
   core.String databaseVersion;
 
   /** HTTP 1.1 Entity tag for the resource. */
@@ -369,11 +369,19 @@ class DatabaseInstance {
   /** Name of the Cloud SQL instance. This does not include the project ID. */
   core.String instance;
 
+  /** The instance type. This can be one of the following.
+CLOUD_SQL_INSTANCE: Regular Cloud SQL instance.
+READ_REPLICA_INSTANCE: Cloud SQL instance acting as a read-replica. */
+  core.String instanceType;
+
   /** The assigned IP addresses for the instance. */
   core.List<IpMapping> ipAddresses;
 
   /** This is always sql#instance. */
   core.String kind;
+
+  /** The name of the instance which will act as master in the replication setup. */
+  core.String masterInstanceName;
 
   /** The maximum disk size of the instance in bytes. */
   core.int maxDiskSize;
@@ -383,6 +391,9 @@ class DatabaseInstance {
 
   /** The geographical region. Can be us-east1, us-central, asia-east1 or europe-west1. Defaults to us-central. The region can not be changed after instance creation. */
   core.String region;
+
+  /** The replicas of the instance. */
+  core.List<core.String> replicaNames;
 
   /** SSL configuration. */
   SslCert serverCaCert;
@@ -412,11 +423,17 @@ UNKNOWN_STATE: The state of the instance is unknown. */
     if (json.containsKey("instance")) {
       instance = json["instance"];
     }
+    if (json.containsKey("instanceType")) {
+      instanceType = json["instanceType"];
+    }
     if (json.containsKey("ipAddresses")) {
       ipAddresses = json["ipAddresses"].map((ipAddressesItem) => new IpMapping.fromJson(ipAddressesItem)).toList();
     }
     if (json.containsKey("kind")) {
       kind = json["kind"];
+    }
+    if (json.containsKey("masterInstanceName")) {
+      masterInstanceName = json["masterInstanceName"];
     }
     if (json.containsKey("maxDiskSize")) {
       maxDiskSize = (json["maxDiskSize"] is core.String) ? core.int.parse(json["maxDiskSize"]) : json["maxDiskSize"];
@@ -426,6 +443,9 @@ UNKNOWN_STATE: The state of the instance is unknown. */
     }
     if (json.containsKey("region")) {
       region = json["region"];
+    }
+    if (json.containsKey("replicaNames")) {
+      replicaNames = json["replicaNames"].toList();
     }
     if (json.containsKey("serverCaCert")) {
       serverCaCert = new SslCert.fromJson(json["serverCaCert"]);
@@ -454,11 +474,17 @@ UNKNOWN_STATE: The state of the instance is unknown. */
     if (instance != null) {
       output["instance"] = instance;
     }
+    if (instanceType != null) {
+      output["instanceType"] = instanceType;
+    }
     if (ipAddresses != null) {
       output["ipAddresses"] = ipAddresses.map((ipAddressesItem) => ipAddressesItem.toJson()).toList();
     }
     if (kind != null) {
       output["kind"] = kind;
+    }
+    if (masterInstanceName != null) {
+      output["masterInstanceName"] = masterInstanceName;
     }
     if (maxDiskSize != null) {
       output["maxDiskSize"] = maxDiskSize;
@@ -468,6 +494,9 @@ UNKNOWN_STATE: The state of the instance is unknown. */
     }
     if (region != null) {
       output["region"] = region;
+    }
+    if (replicaNames != null) {
+      output["replicaNames"] = replicaNames.toList();
     }
     if (serverCaCert != null) {
       output["serverCaCert"] = serverCaCert.toJson();
@@ -1192,6 +1221,44 @@ class InstancesListResponse {
 
 }
 
+/** Database promote read replica response. */
+class InstancesPromoteReplicaResponse {
+
+  /** This is always sql#instancesPromoteReplica. */
+  core.String kind;
+
+  /** An identifier that uniquely identifies the operation. You can use this identifier to retrieve the Operations resource that has information about the operation. */
+  core.String operation;
+
+  /** Create new InstancesPromoteReplicaResponse from JSON data */
+  InstancesPromoteReplicaResponse.fromJson(core.Map json) {
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("operation")) {
+      operation = json["operation"];
+    }
+  }
+
+  /** Create JSON Object for InstancesPromoteReplicaResponse */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (operation != null) {
+      output["operation"] = operation;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of InstancesPromoteReplicaResponse */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
 /** Database instance resetSslConfig response. */
 class InstancesResetSslConfigResponse {
 
@@ -1470,7 +1537,7 @@ class IpMapping {
 /** Preferred location. This specifies where a Cloud SQL instance should preferably be located, either in a specific Compute Engine zone, or co-located with an App Engine application. Note that if the preferred location is not available, the instance will be located as close as possible within the region. Only one location may be specified. */
 class LocationPreference {
 
-  /** The AppEngine application to follow, it must be in the same region as the Cloud SQL instance. */
+  /** The App Engine application to follow, it must be in the same region as the Cloud SQL instance. */
   core.String followGaeApplication;
 
   /** This is always sql#locationPreference. */
@@ -1646,7 +1713,7 @@ NEVER: The instance should never be activated.
 ON_DEMAND: The instance is activated upon receiving requests. */
   core.String activationPolicy;
 
-  /** The AppEngine app ids that can access this instance. */
+  /** The App Engine app IDs that can access this instance. */
   core.List<core.String> authorizedGaeApplications;
 
   /** The daily backup configuration for the instance. */
@@ -1655,13 +1722,16 @@ ON_DEMAND: The instance is activated upon receiving requests. */
   /** The database flags passed to the instance at startup. */
   core.List<DatabaseFlags> databaseFlags;
 
+  /** Configuration specific to read replica instance. Indicates whether replication is enabled or not. */
+  core.bool databaseReplicationEnabled;
+
   /** The settings for IP Management. This allows to enable or disable the instance IP and manage which external networks can connect to the instance. */
   IpConfiguration ipConfiguration;
 
   /** This is always sql#settings. */
   core.String kind;
 
-  /** The location preference settings. This allows the instance to be located as near as possible to either an AppEngine app or GCE zone for better perfomance. */
+  /** The location preference settings. This allows the instance to be located as near as possible to either an App Engine app or GCE zone for better performance. */
   LocationPreference locationPreference;
 
   /** The pricing plan for this instance. This can be either PER_USE or PACKAGE. */
@@ -1689,6 +1759,9 @@ ON_DEMAND: The instance is activated upon receiving requests. */
     }
     if (json.containsKey("databaseFlags")) {
       databaseFlags = json["databaseFlags"].map((databaseFlagsItem) => new DatabaseFlags.fromJson(databaseFlagsItem)).toList();
+    }
+    if (json.containsKey("databaseReplicationEnabled")) {
+      databaseReplicationEnabled = json["databaseReplicationEnabled"];
     }
     if (json.containsKey("ipConfiguration")) {
       ipConfiguration = new IpConfiguration.fromJson(json["ipConfiguration"]);
@@ -1728,6 +1801,9 @@ ON_DEMAND: The instance is activated upon receiving requests. */
     }
     if (databaseFlags != null) {
       output["databaseFlags"] = databaseFlags.map((databaseFlagsItem) => databaseFlagsItem.toJson()).toList();
+    }
+    if (databaseReplicationEnabled != null) {
+      output["databaseReplicationEnabled"] = databaseReplicationEnabled;
     }
     if (ipConfiguration != null) {
       output["ipConfiguration"] = ipConfiguration.toJson();

@@ -8,7 +8,7 @@ class BackupRunsResource_ {
       _client = client;
 
   /**
-   * Retrieves a resource containing information about a backup run.
+   * Retrieves information about a specified backup run for a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -53,7 +53,7 @@ class BackupRunsResource_ {
   }
 
   /**
-   * Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.
+   * Lists all backup runs associated with a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -108,7 +108,7 @@ class FlagsResource_ {
       _client = client;
 
   /**
-   * List all available database flags for Google Cloud SQL instances.
+   * Lists all database flags that can be set for Google Cloud SQL instances.
    *
    * [optParams] - Additional query parameters
    */
@@ -145,7 +145,7 @@ class InstancesResource_ {
       _client = client;
 
   /**
-   * Creates a Cloud SQL instance as a clone of the source instance.
+   * Creates a Cloud SQL instance as a clone of a source instance.
    *
    * [request] - InstancesCloneRequest to send in this request
    *
@@ -256,7 +256,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Retrieves a resource containing information about a Cloud SQL instance.
+   * Retrieves information about a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -293,7 +293,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Imports data into a Cloud SQL instance from a MySQL dump file in Google Cloud Storage.
+   * Imports data into a Cloud SQL instance from a MySQL dump file stored in a Google Cloud Storage bucket.
    *
    * [request] - InstancesImportRequest to send in this request
    *
@@ -367,7 +367,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Lists instances under a given project in the alphabetical order of the instance name.
+   * Lists instances for a given project, in alphabetical order by instance name.
    *
    * [project] - Project ID of the project for which to list Cloud SQL instances.
    *
@@ -406,7 +406,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.. This method supports patch semantics.
+   * Updates the settings of a Cloud SQL instance. This method supports patch semantics.
    *
    * [request] - DatabaseInstance to send in this request
    *
@@ -445,7 +445,44 @@ class InstancesResource_ {
   }
 
   /**
-   * Deletes all client certificates and generates a new server SSL certificate for the instance. The changes will not take effect until the instance is restarted. Existing instances without a server certificate will need to call this once to set a server certificate.
+   * Promotes the read replica instance to be a stand-alone Cloud SQL instance.
+   *
+   * [project] - ID of the project that contains the read replica.
+   *
+   * [instance] - Cloud SQL read replica instance name.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<InstancesPromoteReplicaResponse> promoteReplica(core.String project, core.String instance, {core.Map optParams}) {
+    var url = "projects/{project}/instances/{instance}/promoteReplica";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (instance == null) paramErrors.add("instance is required");
+    if (instance != null) urlParams["instance"] = instance;
+    if (project == null) paramErrors.add("project is required");
+    if (project != null) urlParams["project"] = project;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new InstancesPromoteReplicaResponse.fromJson(data));
+  }
+
+  /**
+   * Deletes all client certificates and generates a new server SSL certificate for a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -564,7 +601,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Sets the password for the root user.
+   * Sets the password for the root user of the specified Cloud SQL instance.
    *
    * [request] - InstanceSetRootPasswordRequest to send in this request
    *
@@ -603,7 +640,7 @@ class InstancesResource_ {
   }
 
   /**
-   * Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.
+   * Updates the settings of a Cloud SQL instance.
    *
    * [request] - DatabaseInstance to send in this request
    *
@@ -650,7 +687,7 @@ class OperationsResource_ {
       _client = client;
 
   /**
-   * Retrieves an instance operation that has been performed on an instance.
+   * Retrieves information about a specific operation that was performed on a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -691,7 +728,7 @@ class OperationsResource_ {
   }
 
   /**
-   * Lists all instance operations that have been performed on the given Cloud SQL instance in the reverse chronological order of the start time.
+   * Lists all operations that have been performed on a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -742,7 +779,7 @@ class SslCertsResource_ {
       _client = client;
 
   /**
-   * Deletes the SSL certificate. The change will not take effect until the instance is restarted.
+   * Deletes an SSL certificate from a Cloud SQL instance.
    *
    * [project] - Project ID of the project that contains the instance to be deleted.
    *
@@ -783,7 +820,7 @@ class SslCertsResource_ {
   }
 
   /**
-   * Retrieves a particular SSL certificate. Does not include the private key (required for usage). The private key must be saved from the response to initial creation.
+   * Retrieves an SSL certificate as specified by its SHA-1 fingerprint.
    *
    * [project] - Project ID of the project that contains the instance.
    *
@@ -824,7 +861,7 @@ class SslCertsResource_ {
   }
 
   /**
-   * Creates an SSL certificate and returns it along with the private key and server certificate authority. The new certificate will not be usable until the instance is restarted.
+   * Creates an SSL certificate and returns the certificate, the associated private key, and the server certificate authority.
    *
    * [request] - SslCertsInsertRequest to send in this request
    *
@@ -863,7 +900,7 @@ class SslCertsResource_ {
   }
 
   /**
-   * Lists all of the current SSL certificates for the instance.
+   * Lists all of the current SSL certificates defined for a Cloud SQL instance.
    *
    * [project] - Project ID of the project for which to list Cloud SQL instances.
    *
@@ -908,7 +945,7 @@ class TiersResource_ {
       _client = client;
 
   /**
-   * Lists all available service tiers for Google Cloud SQL, for example D1, D2. For related information, see Pricing.
+   * Lists service tiers that can be used to create Google Cloud SQL instances.
    *
    * [project] - Project ID of the project for which to list tiers.
    *
